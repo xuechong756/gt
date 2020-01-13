@@ -1747,7 +1747,18 @@ window.__require = function e(t, n, r) {
         this.blockSize = cc.size(100, 100);
         this.node.on(cc.Node.EventType.TOUCH_START, this.onTouch, this);
         this.node.on(cc.Node.EventType.TOUCH_MOVE, this.onTouch, this);
+		
+		var tipBtn = cc.find("tip", this.node);
+		
+		this.TimeCheckAd = setInterval(function(){
+			//埋点 激励用完隐藏
+			//tipBtn.active = 0;
+		}, 500);
+//		console.log(this.node);
       },
+	  onDestroy:function(){
+		  clearInterval(this.TimeCheckAd);
+	  },
       saveMap: function saveMap() {
         this.saved_map = [];
         this.collisioned_items = [];
@@ -1860,23 +1871,30 @@ window.__require = function e(t, n, r) {
           this.setBlockRotation(this.tips_map[i], tip[i], true);
         }
       },
-      onClickTip: function onClickTip() {
+      onClickTip: function onClickTip(event) {
         var _this2 = this;
         if (!this.touch_enable) return;
-        window.wxRank && window.wxRank.ad_tip && window.wxRank.ad_tip.ok ? UIMgr.show("Msg", "\u89c2\u770b\u5e7f\u544a\u89c6\u9891\uff0c\u83b7\u5f97\u4e00\u6b21\u63d0\u793a\u673a\u4f1a", function(confirm) {
+		
+		UIMgr.show("Msg", "         是否使用激励获得提示?", function(){
+			//埋点 激励回调下面
+			_this2.doTip();
+		});
+		
+		
+       /* window.wxRank && window.wxRank.ad_tip && window.wxRank.ad_tip.ok ? UIMgr.show("Msg", "观看广告视频，获得一次提示机会", function(confirm) {
           confirm && window.wxRank.ad_tip.show(function(ok) {
-            ok ? UIMgr.show("Msg", "\u89c2\u770b\u89c6\u9891\u5b8c\u6210\uff0c\u60a8\u83b7\u5f97\u4e86\u63d0\u793a\u673a\u4f1a", function() {
+            ok ? UIMgr.show("Msg", "观看视频完成，您获得了提示机会", function() {
               _this2.doTip();
-            }, "ok") : UIMgr.show("Msg", "\u60a8\u53d6\u6d88\u4e86\u64ad\u653e\uff0c\u6ca1\u6709\u83b7\u5f97\u5956\u52b1", null, "ok");
+            }, "ok") : UIMgr.show("Msg", "您取消了播放，没有获得奖励", null, "ok");
           });
-        }) : UIMgr.show("Msg", "\u5206\u4eab\u6e38\u620f\u7ed9\u670b\u53cb\uff0c\u83b7\u5f97\u4e00\u6b21\u63d0\u793a\u673a\u4f1a", function(ok) {
+        }) : UIMgr.show("Msg", "分享游戏给朋友，获得一次提示机会", function(ok) {
           if (ok) {
             _this2.doTip();
             cc.sys.browserType == cc.sys.BROWSER_TYPE_WECHAT_GAME && wx.shareAppMessage({
-              title: "\u8fd9\u4e00\u5173\u8fc7\u4e0d\u53bb\u4e86\u6c42\u5927\u795e\u5e2e\u52a9"
+              title: "这一关过不去了求大神帮助"
             });
           }
-        });
+        });*/
       },
       testInTouch: function testInTouch(cell, pos) {
         return Math.abs(cell.x - pos.x) < this.blockSize.width / 2 && Math.abs(cell.y - pos.y) < this.blockSize.height / 2;
@@ -1988,7 +2006,10 @@ window.__require = function e(t, n, r) {
         this.ball.active = false;
         if ("level" == this.enterMode) {
           gs.setCurrentLevelPass(this.data.enterLevel);
-          window.wxRank && window.wxRank.submit(gs.currentLevel() - 1);
+          //window.wxRank && window.wxRank.submit(gs.currentLevel() - 1);
+		  var thisObj = this;
+		  //埋点 分数上报
+		  console.log("score:" + thisObj.data.enterLevel);
         }
         var ani = item.node.getComponent(cc.Animation);
         ani.on("finished", this.onGameWinCB, this);
@@ -2236,6 +2257,13 @@ window.__require = function e(t, n, r) {
       onLoad: function onLoad() {
 		this.autoAdapteScreen();
         this.node.onenter = this.onenter.bind(this);
+		
+		//修改
+		var moreGameBtn = this.node.children[2].children[1].children[0];
+		moreGameBtn.y += 10;
+		moreGameBtn = moreGameBtn.getComponent(cc.Label);
+		moreGameBtn.string = "更多好玩";
+		//console.log(this.node);
       },
 	  autoAdapteScreen:function(){
 			// 适配解决方案
@@ -2264,11 +2292,14 @@ window.__require = function e(t, n, r) {
         window.wxRank && first && window.wxRank.auth();
       },
       scsj: function scsj() {
-        var lev = cc.sys.localStorage.getItem("level");
+		  //埋点 更多好玩。 由 自定关卡改
+		  console.log("more game");
+		  
+      /*  var lev = cc.sys.localStorage.getItem("level");
         if ("" != lev || null != lev || void 0 != lev) {
           var le = parseInt(lev);
           le >= 5 ? sceneManager.show("Editor") : this.popnode.runAction(cc.sequence(cc.fadeIn(.5), cc.fadeOut(.2)));
-        } else this.popnode.runAction(cc.sequence(cc.fadeIn(.5), cc.fadeOut(.2)));
+        } else this.popnode.runAction(cc.sequence(cc.fadeIn(.5), cc.fadeOut(.2)));*/
       },
       onClick1: function onClick1() {
         sceneManager.show("Level");
@@ -2277,7 +2308,9 @@ window.__require = function e(t, n, r) {
         UIMgr.show("Options", true);
       },
       onClickRank: function onClickRank() {
-        UIMgr.show("Rank");
+		//  UIMgr.show("Rank");
+		//埋点 排行榜
+		console.log("show ranking");
       }
     });
     cc._RF.pop();
