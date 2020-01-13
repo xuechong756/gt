@@ -353,6 +353,7 @@ window.__require = function e(t, n, r) {
         firstScenePfb: cc.Prefab
       },
       onLoad: function onLoad() {
+		this.autoAdapteScreen();
         window.sceneManager = this;
         this.CurrentModule = null;
         this.current = null;
@@ -366,6 +367,27 @@ window.__require = function e(t, n, r) {
           this.root.height = cc.winSize.height;
         }
       },
+	  autoAdapteScreen:function(){
+			// 适配解决方案
+			let _canvas = cc.Canvas.instance;
+		// 设计分辨率比
+			let _rateR = _canvas.designResolution.height/_canvas.designResolution.width;
+		// 显示分辨率比
+			let _rateV = cc.winSize.height/cc.winSize.width;
+			console.log("winSize: rateR: "+_rateR+" rateV: "+_rateV);
+			if (_rateV > _rateR)
+			{
+				_canvas.fitHeight = false;
+				_canvas.fitWidth = true;
+				console.log("winSize: fitWidth");
+			}
+			else
+			{
+				_canvas.fitHeight = true;
+				_canvas.fitWidth = false;
+				console.log("winSize: fitHeight");
+			}
+	  },
       asyncLoad: function asyncLoad(key, cb) {
         var _this = this;
         var progressCB = function progressCB(done, total, item) {
@@ -2212,8 +2234,30 @@ window.__require = function e(t, n, r) {
         popnode: cc.Node
       },
       onLoad: function onLoad() {
+		this.autoAdapteScreen();
         this.node.onenter = this.onenter.bind(this);
       },
+	  autoAdapteScreen:function(){
+			// 适配解决方案
+			let _canvas = cc.Canvas.instance;
+		// 设计分辨率比
+			let _rateR = _canvas.designResolution.height/_canvas.designResolution.width;
+		// 显示分辨率比
+			let _rateV = cc.winSize.height/cc.winSize.width;
+			console.log("winSize: rateR: "+_rateR+" rateV: "+_rateV);
+			if (_rateV > _rateR)
+			{
+				_canvas.fitHeight = false;
+				_canvas.fitWidth = true;
+				console.log("winSize: fitWidth");
+			}
+			else
+			{
+				_canvas.fitHeight = true;
+				_canvas.fitWidth = false;
+				console.log("winSize: fitHeight");
+			}
+		},
       onenter: function onenter(first) {
         gs.playBgMp3(this.bgm);
         window.clubBtn && window.clubBtn.show();
