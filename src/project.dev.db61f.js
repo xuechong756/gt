@@ -1877,9 +1877,9 @@ window.__require = function e(t, n, r) {
         var _this2 = this;
         if (!this.touch_enable) return;
 		
-		UIMgr.show("Msg", "         是否使用激励获得提示?", function(){
+		UIMgr.show("Msg", "         是否使用激励获得提示?", function(d){
 			//埋点 激励回调下面
-			window.h5api && window.h5api.playAd(function(obj){
+			d && window.h5api && window.h5api.playAd(function(obj){
 				console.log('代码:' + obj.code + ',消息:' + obj.message);
 				if (obj.code === 10000) {
 					console.log('开始播放');
@@ -1889,7 +1889,7 @@ window.__require = function e(t, n, r) {
 					console.log('广告异常');
 				}
 			}.bind(this));
-		});
+		},null, "ok");
 		
 		
        /* window.wxRank && window.wxRank.ad_tip && window.wxRank.ad_tip.ok ? UIMgr.show("Msg", "观看广告视频，获得一次提示机会", function(confirm) {
